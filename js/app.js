@@ -1,14 +1,27 @@
 const $name = $('#name');
 const $colorSelect = $('#colors-js-puns');
-const $otherJob = $('#other');
+const $otherJobInput = $('#other');
+const $paymentSelect = $('#payment');
 const $bitcoin = $('fieldset:last div:last');
 const $paypal = $('fieldset:last div:last').prev();
+const $jobSelect = $('#title option');
+//console.log($jobSelect);
+
 
 $name.focus();
 $colorSelect.hide();
-$otherJob.hide();
+$otherJobInput.hide();
+$paymentSelect.children().eq(1).attr('selected',"");
 $bitcoin.hide();
 $paypal.hide();
+
+$('#title').on('change', function () {
+  if ($(this).val() === 'other') {
+    $otherJobInput.show();
+  } else {
+    $otherJobInput.hide();
+  }
+});
 
 $('#design').on('change', function () {
   if($(this).val() === 'js puns' || $(this).val() === 'heart js') {
