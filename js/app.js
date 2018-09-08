@@ -8,6 +8,9 @@ const $bitcoin = $('fieldset:last div:last');
 const $paypal = $('fieldset:last div:last').prev();
 const $jobSelect = $('#title option');
 const $submitButton = $('form button');
+const $ccNum = $('#cc-num');
+const $zip = $('#zip');
+const $cvv = $('#cvv');
 //console.log($jobSelect);
 
 //initialing setting elements to be hidden/focused
@@ -16,10 +19,11 @@ $colorSelect.hide();
 $otherJobInput.hide();
 $('.activities').append($totalDisplay);
 $totalDisplay.hide();
+$paymentSelect.children().eq(0).hide(); // hides Select Payment Method
 $paymentSelect.children().eq(1).attr('selected',"");
 $bitcoin.hide();
 $paypal.hide();
-$('form').attr('novalidate',"");
+$('form').attr('novalidate',"");  //stops HTML5 validation
 
 //create, attach, and hide error messages
 //function creates a span with class error, id and text from parameters
@@ -44,6 +48,11 @@ $('#numericCC').hide();
 $paymentSelect.after($errorSpan('lengthCC','  Length of CC 13-16, Zip 5, and CVV 3'));
 $('#lengthCC').hide();
 
+
+const $blankCC = $('#blankCC');
+const $numericCC = $('#numericCC');
+const $lengthCC = $('#lengthCC');
+
 //shows or hides the other job input field based on job selection
 $('#title').on('change', function () {
   if ($(this).val() === 'other') {
@@ -62,7 +71,7 @@ $('#design').on('change', function () {
     $colorSelect.hide();
   }
   //hides color options based on design selected.
-  //adds or removes selected attribute so color show in drop is correct
+  //adds or removes selected attribute so color shown in dropdown is correct
   if($(this).val() === "js puns") {
     $('#color option').eq(0).show().attr('selected',"");
     $('#color option').eq(1).show();
@@ -137,11 +146,11 @@ $('.activities').on('change', function () {
 //Payments
 //checks the value of the selection and shows that div, while hiding the other two
 $('#payment').on('change', function () {
-  if ($(this).val() === 'select_method') {
-    $('#credit-card').hide();
-    $('#credit-card').next().hide();
-    $('#credit-card').next().next().hide();
-  }
+  // if ($(this).val() === 'select_method') {
+  //   $('#credit-card').hide();
+  //   $('#credit-card').next().hide();
+  //   $('#credit-card').next().next().hide();
+  // }
   if ($(this).val() === 'credit card') {
     $('#credit-card').show();
     $('#credit-card').next().hide();
@@ -159,24 +168,24 @@ $('#payment').on('change', function () {
   }
 });
 
-//checks to see that @ is neither first or last
+//looks for basic email format
+//cheks to see that @ is neither first or last
 //and that there is a period after the @, which is also  not last
 function $validEmail (email) {
   const at = email.indexOf('@');
   const period = email.indexOf('.',at);
-  if (at > 2 && at < email.length && period < email.length && (period - at) > 2) {
-  return 'valid';
-} /*else {
-    console.log(false);
-  }*/
+  if (at > 2 && at < email.length && period < (email.length -2) && (period - at) > 2) {
+    return 'valid';
+  }
 }
 
 //Validation Functions - used in Submit button listener and change listeners
 function  $nameValid () {
+  //if name is blank, show error message and add error class, else, remove error class and hide error message
   if ($name.val() === "") {
     $('#blankName').show();
     $name.addClass('error');
-    return true;
+    return true; //stops form from submitting when function called in submit event
   } else {
     $('#blankName').hide();
     $name.removeClass('error');
@@ -184,167 +193,100 @@ function  $nameValid () {
 }
 
 function $emailValid  () {
+  //adds error class, which is removed only if not blank and email is valid format
+  $email.addClass('error');
+  // if email is blank, add error class, show blank error message, and hide invalid error message
   if ($email.val() === "") { //checks if email blank
     $('#blankEmail').show();
-    $email.addClass('error');
-    return true;
+    $('#invalidEmail').hide();
+    return true;//stops form from submitting when function called in submit event
   } else if ($validEmail($email.val()) !== 'valid') { //checks if basic syntax of email is valid
+    // if email is not valid, shows invalid email message, and hides blank message
     $('#blankEmail').hide();
     $('#invalidEmail').show();
-    return true;
-  } else {
-    $('#validEmail').hide();
+    return true;//stops form from submitting when function called in submit event
+  } else { // email is not blank, removes error class and messages
+    $('#invalidEmail').hide();
+    $('#blankEmail').hide();
     $email.removeClass('error');
   }
 }
 
 function $activitiesValid () {
+  //looks to see if any boxes are checked.  if not, addes activity error message & error class
   if ($('input:checked').length === 0) {
     $('#activityReq').show();
-    return true;
+    $('fieldset.activities legend').addClass('error');
+    return true;//stops form from submitting when function called in submit event
   } else {
     $('#activityReq').hide();
+    $('fieldset.activities legend').removeClass('error');
   }
 }
 
-function $paymentValid () {
-    const $ccNum = $('#cc-num');
-  const $zip = $('#zip');
-  const $cvv = $('#cvv');
 
-  //checks to see if no payment method is selected
 
+function $ccValidation () {
   if ($paymentSelect.val() !== 'credit card') {
-    $('#blankCC').hide();
+    //if payment method is not credit card, removes error class and hides error messages
+    $blankCC.hide();
+    $numericCC.hide();
+    $lengthCC.hide();
     $ccNum.removeClass('error');
     $zip.removeClass('error');
     $cvv.removeClass('error');
-  }
-
-
-  if ($paymentSelect.val() === 'select_method') {
-    $('#methodReq').show();
-    $('#payment').addClass('error');
-    $('#blankCC').hide();
-    $ccNum.removeClass('error');
-    $zip.removeClass('error');
-    $cvv.removeClass('error');
-    return true;
-  } else {
-    console.log("stuff");
-    $('#methodReq').hide();
-    $('#payment').removeClass('error');
-
-  }
-  if ($('#payment').val() === 'credit card') {
-    if ($ccNum.val() === "" || $zip.val() === "" || $cvv.val() === "") {
-      $ccNum.addClass('error');
-      $zip.addClass('error');
-      $cvv.addClass('error');
-      $('#blankCC').show();
-      return true;
-    } else if (isNaN($ccNum.val())|| isNaN($zip.val()) || isNaN($cvv.val())) {
-      $('#blankCC').hide();
-      $('#numericCC').show();
-      return true;
-    } else if ($ccNum.val().length < 13 || $ccNum.val().length > 16) {
-      $('#numericCC').hide();
-      $('#lengthCC').show();
-      return true;
-    } else if ($zip.val().length < 5 || $zip.val().length > 5) {
-      return true;
-    }
-    else if ($cvv.val().length < 3 || $cvv.val().length > 3) {
-      return true;
+  } else if ($paymentSelect.val() === 'credit card') {
+    // looks to see if payment method is credit card
+    //addes error classes which will be removed if it passes validation.
+    $ccNum.addClass('error');
+    $zip.addClass('error');
+    $cvv.addClass('error');
+    if ( $ccNum.val() === '' || $zip.val() === '' || $cvv.val() === ''  ) {
+      //if any field is blank, shows blank error message, hides other messages
+      $blankCC.show();
+      $numericCC.hide();
+      $lengthCC.hide();
+      return true;//stops form from submitting when function called in submit event
+    } else if ( isNaN($ccNum.val()) || isNaN($zip.val()) || isNaN($cvv.val()) ) {
+      //if any field is not a number, shows numeric error message, hides other messages
+      $blankCC.hide();
+      $numericCC.show();
+      $lengthCC.hide();
+      return true;//stops form from submitting when function called in submit event
+    } else if ( $ccNum.val().length < 13 || $ccNum.val().length > 16 || ($zip.val().length !== 5) || ($cvv.val().length !== 3)) {
+        //if any field is not correct length, shows length error message, hides other messages
+      $blankCC.hide();
+      $numericCC.hide();
+      $lengthCC.show();
+      return true;//stops form from submitting when function called in submit event
     } else {
-      $('#lengthCC').hide();
-
+      // cc info valid, removes error and messages
+      $blankCC.hide();
+      $numericCC.hide();
+      $lengthCC.hide();
       $ccNum.removeClass('error');
       $zip.removeClass('error');
       $cvv.removeClass('error');
+
     }
   }
-// if ($paymentSelect.val() !== 'credit card') {
-//   $('#blankCC').hide();
-//   $ccNum.removeClass('error');
-//   $zip.removeClass('error');
-//   $cvv.removeClass('error');
-// }
-
-
-
 }
-
-function $ccValidation () {
-  const $ccNum = $('#cc-num');
-  const $zip = $('#zip');
-  const $cvv = $('#cvv');
-  // $('#lengthCC').hide();
-  //
-  // $('#numericCC').hide();
-  // $('#blankCC').hide();
-  // $ccNum.removeClass('error');
-  // $zip.removeClass('error');
-  // $cvv.removeClass('error');
-  //if cc is selected, checks to see if any field is blank
-  //if  not, then checks for NaN
-  //if all numeric, finally checks length
-  // if ($('#payment').val() === 'credit card') {
-  //   if ($ccNum.val() === "" || $zip.val() === "" || $cvv.val() === "") {
-  //     $ccNum.addClass('error');
-  //     $zip.addClass('error');
-  //     $cvv.addClass('error');
-  //     $('#blankCC').show();
-  //     return true;
-  //   } else if (isNaN($ccNum.val())|| isNaN($zip.val()) || isNaN($cvv.val())) {
-  //     $('#blankCC').hide();
-  //     $('#numericCC').show();
-  //     return true;
-  //   } else if ($ccNum.val().length < 13 || $ccNum.val().length > 16) {
-  //     $('#numericCC').hide();
-  //     $('#lengthCC').show();
-  //     return true;
-  //   } else if ($zip.val().length < 5 || $zip.val().length > 5) {
-  //     return true;
-  //   }
-  //   else if ($cvv.val().length < 3 || $cvv.val().length > 3) {
-  //     return true;
-  //   } else {
-  //     $('#lengthCC').hide();
-  //
-  //     $ccNum.removeClass('error');
-  //     $zip.removeClass('error');
-  //     $cvv.removeClass('error');
-  //   }
-  // }
-  // if ($paymentSelect.val() === 'paypal' ||  $paymentSelect.val() === 'bitcoin' || $paymentSelect.val() === 'select_method') {
-  //
-  //   $('#lengthCC').hide();
-  //
-  //   $('#numericCC').hide();
-  //   $('#blankCC').hide();
-  //   $ccNum.removeClass('error');
-  //   $zip.removeClass('error');
-  //   $cvv.removeClass('error');
-  // }
-}
-
 
 //Submit and Validation
 $submitButton.on('click', function (event) {
-   let $error = false;
-    // $error = $nameValid();
-  //  $error = $emailValid();
-  //  $error = $activitiesValid();
-   $error = $paymentValid();
-  // $error = $ccValidation();
+   let $error = false; //if this is true, it will stop submit action
+    $error = $nameValid();
+   $error = $emailValid();
+   $error = $activitiesValid();
+  $error = $ccValidation();
 
   if ($error) {
     event.preventDefault();
   }
 });
 
-//After Submit w/ errors, event listners to check if errors fixed
+//After Submit w/ errors, event listners check to see if an inputs error message is shown
+//if shown, runs validation function again.
 $name.on('change', function () {
   if($('#blankName').css('display') === 'inline'){
   $nameValid();
@@ -357,12 +299,16 @@ $('.activities').on('click change', function () {
 }
 });
 
-$paymentSelect.on('change', function () {
-  if ($('#methodReq').css('display') === 'inline') {
-  $paymentValid();
-} else if($('#blankCC').css('display') === 'inline' || $('#numericCC').css('display') === 'inline' || $('#lengthCC').css('display') === 'inline') {
-  $paymentValid();
+$paymentSelect.parent().on('onchange input',  function () {
+  if($blankCC.css('display') === 'inline' || $numericCC.css('display') === 'inline' || $lengthCC.css('display') === 'inline'){
+    $ccValidation();
 }
+});
+
+//email checks for validation as email is typed in
+//does not check if error message is shown, as this validation will happen even before form is submitted.
+$email.on('change keyup', function () {
+      $emailValid();
 });
 
 
