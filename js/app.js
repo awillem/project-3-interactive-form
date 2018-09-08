@@ -98,7 +98,6 @@ $('.activities').on('change', function () {
   //if nothing is checked, sets $total back to 0
   if ($("input:checked").length === 0) {
     $total = 0;
-    console.log($total);
   }
   if ($("input[name='all']").is(':checked')) {
     $total += 200;
@@ -133,6 +132,8 @@ $('.activities').on('change', function () {
     if ($("input[name='npm']").is(':checked')) {
       $total += 100;
     }
+
+
 
 //keeps the $totalDisplay span hidden unless $total is above 0.
 //then it adds text and shows the span
