@@ -137,6 +137,10 @@ button:hover {
 	margin-top: 1.25em;
 }
 
+label input[disabled="disabled"] {
+  color: white;
+  text-decoration: line-through;
+}
 
 /* =================================
   Errors

@@ -104,28 +104,28 @@ $('.activities').on('change', function () {
     $total += 200;
   }
   if ($("input[name='js-frameworks']").is(':checked')) {
-    $("input[name='express']").attr('disabled',"");
+    $("input[name='express']").attr('disabled',"").parent().css('color', 'grey').css('text-decoration', 'line-through');
     $total += 100;
   } else {
-    $("input[name='express']").attr('disabled',false);
+    $("input[name='express']").attr('disabled',false).parent().css('color', '').css('text-decoration', '');
   }
   if ($("input[name='express']").is(':checked')) {
-    $("input[name='js-frameworks']").attr('disabled',"");
+    $("input[name='js-frameworks']").attr('disabled',"").parent().css('color', 'grey').css('text-decoration', 'line-through');
     $total += 100;
   } else {
-    $("input[name='js-frameworks']").attr('disabled',false);
+    $("input[name='js-frameworks']").attr('disabled',false).parent().css('color', '').css('text-decoration', '');
   }
   if ($("input[name='js-libs']").is(':checked')) {
-    $("input[name='node']").attr('disabled',"");
+    $("input[name='node']").attr('disabled',"").parent().css('color', 'grey').css('text-decoration', 'line-through');
     $total += 100;
   } else {
-    $("input[name='node']").attr('disabled',false);
+    $("input[name='node']").attr('disabled',false).parent().css('color', '').css('text-decoration', '');
   }
   if ($("input[name='node']").is(':checked')) {
-    $("input[name='js-libs']").attr('disabled',"");
+    $("input[name='js-libs']").attr('disabled',"").parent().css('color', 'grey').css('text-decoration', 'line-through');
     $total += 100;
   } else {
-    $("input[name='js-libs']").attr('disabled',false);
+    $("input[name='js-libs']").attr('disabled',false).parent().css('color', '').css('text-decoration', '');
   }
   if ($("input[name='build-tools']").is(':checked')) {
     $total += 100;
