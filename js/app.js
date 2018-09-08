@@ -189,6 +189,7 @@ function  $nameValid () {
   } else {
     $('#blankName').hide();
     $name.removeClass('error');
+    return false;
   }
 }
 
@@ -199,16 +200,17 @@ function $emailValid  () {
   if ($email.val() === "") { //checks if email blank
     $('#blankEmail').show();
     $('#invalidEmail').hide();
-    return true;//stops form from submitting when function called in submit event
+    return true; //stops form from submitting when function called in submit event
   } else if ($validEmail($email.val()) !== 'valid') { //checks if basic syntax of email is valid
     // if email is not valid, shows invalid email message, and hides blank message
     $('#blankEmail').hide();
     $('#invalidEmail').show();
-    return true;//stops form from submitting when function called in submit event
+    return true; //stops form from submitting when function called in submit event
   } else { // email is not blank, removes error class and messages
     $('#invalidEmail').hide();
     $('#blankEmail').hide();
     $email.removeClass('error');
+    return false;
   }
 }
 
@@ -216,11 +218,11 @@ function $activitiesValid () {
   //looks to see if any boxes are checked.  if not, addes activity error message & error class
   if ($('input:checked').length === 0) {
     $('#activityReq').show();
-    $('fieldset.activities legend').addClass('error');
-    return true;//stops form from submitting when function called in submit event
+  //stops form from submitting when function called in submit event
+  return true; //stops form from submitting when function called in submit event
   } else {
     $('#activityReq').hide();
-    $('fieldset.activities legend').removeClass('error');
+    return false;
   }
 }
 
@@ -235,6 +237,7 @@ function $ccValidation () {
     $ccNum.removeClass('error');
     $zip.removeClass('error');
     $cvv.removeClass('error');
+    return false;
   } else if ($paymentSelect.val() === 'credit card') {
     // looks to see if payment method is credit card
     //addes error classes which will be removed if it passes validation.
@@ -246,19 +249,22 @@ function $ccValidation () {
       $blankCC.show();
       $numericCC.hide();
       $lengthCC.hide();
-      return true;//stops form from submitting when function called in submit event
+      //stops form from submitting when function called in submit event
+      return true; //stops form from submitting when function called in submit event
     } else if ( isNaN($ccNum.val()) || isNaN($zip.val()) || isNaN($cvv.val()) ) {
       //if any field is not a number, shows numeric error message, hides other messages
       $blankCC.hide();
       $numericCC.show();
       $lengthCC.hide();
-      return true;//stops form from submitting when function called in submit event
+      //stops form from submitting when function called in submit event
+      return true; //stops form from submitting when function called in submit event
     } else if ( $ccNum.val().length < 13 || $ccNum.val().length > 16 || ($zip.val().length !== 5) || ($cvv.val().length !== 3)) {
         //if any field is not correct length, shows length error message, hides other messages
       $blankCC.hide();
       $numericCC.hide();
       $lengthCC.show();
-      return true;//stops form from submitting when function called in submit event
+      //stops form from submitting when function called in submit event
+      return true; //stops form from submitting when function called in submit event
     } else {
       // cc info valid, removes error and messages
       $blankCC.hide();
@@ -267,18 +273,26 @@ function $ccValidation () {
       $ccNum.removeClass('error');
       $zip.removeClass('error');
       $cvv.removeClass('error');
+      return false;
 
     }
   }
 }
+let $error = false; //if this is true, it will stop submit action
 
 //Submit and Validation
 $submitButton.on('click', function (event) {
-   let $error = false; //if this is true, it will stop submit action
-    $error = $nameValid();
-   $error = $emailValid();
-   $error = $activitiesValid();
-  $error = $ccValidation();
+  let $error = false; //if this is true, it will stop submit action
+
+ $nameValid();
+    $emailValid();
+     $activitiesValid();
+   $ccValidation();
+if ($nameValid() ||  $emailValid() || $activitiesValid() || $ccValidation()) {
+  $error = true;
+} else {
+  $error = false;
+}
 
   if ($error) {
     event.preventDefault();
@@ -306,7 +320,7 @@ $paymentSelect.parent().on('onchange input',  function () {
 });
 
 //email checks for validation as email is typed in
-//does not check if error message is shown, as this validation will happen even before form is submitted.
+//does not check if error message is shown, as this validation will happen even when typing
 $email.on('change keyup', function () {
       $emailValid();
 });
