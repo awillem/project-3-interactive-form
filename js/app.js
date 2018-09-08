@@ -208,22 +208,34 @@ function $activitiesValid () {
 }
 
 function $paymentValid () {
-  //checks to see if no payment method is selected
-  const $ccNum = $('#cc-num');
+    const $ccNum = $('#cc-num');
   const $zip = $('#zip');
   const $cvv = $('#cvv');
 
-  if ($('#payment').val() === 'select_method') {
+  //checks to see if no payment method is selected
+
+  if ($paymentSelect.val() !== 'credit card') {
+    $('#blankCC').hide();
+    $ccNum.removeClass('error');
+    $zip.removeClass('error');
+    $cvv.removeClass('error');
+  }
+
+
+  if ($paymentSelect.val() === 'select_method') {
     $('#methodReq').show();
     $('#payment').addClass('error');
+    $('#blankCC').hide();
+    $ccNum.removeClass('error');
+    $zip.removeClass('error');
+    $cvv.removeClass('error');
     return true;
   } else {
+    console.log("stuff");
     $('#methodReq').hide();
     $('#payment').removeClass('error');
+
   }
-    //if cc is selected, checks to see if any field is blank
-    //if  not, then checks for NaN
-    //if all numeric, finally checks length
   if ($('#payment').val() === 'credit card') {
     if ($ccNum.val() === "" || $zip.val() === "" || $cvv.val() === "") {
       $ccNum.addClass('error');
@@ -246,21 +258,86 @@ function $paymentValid () {
       return true;
     } else {
       $('#lengthCC').hide();
+
       $ccNum.removeClass('error');
       $zip.removeClass('error');
       $cvv.removeClass('error');
     }
   }
+// if ($paymentSelect.val() !== 'credit card') {
+//   $('#blankCC').hide();
+//   $ccNum.removeClass('error');
+//   $zip.removeClass('error');
+//   $cvv.removeClass('error');
+// }
+
+
+
+}
+
+function $ccValidation () {
+  const $ccNum = $('#cc-num');
+  const $zip = $('#zip');
+  const $cvv = $('#cvv');
+  // $('#lengthCC').hide();
+  //
+  // $('#numericCC').hide();
+  // $('#blankCC').hide();
+  // $ccNum.removeClass('error');
+  // $zip.removeClass('error');
+  // $cvv.removeClass('error');
+  //if cc is selected, checks to see if any field is blank
+  //if  not, then checks for NaN
+  //if all numeric, finally checks length
+  // if ($('#payment').val() === 'credit card') {
+  //   if ($ccNum.val() === "" || $zip.val() === "" || $cvv.val() === "") {
+  //     $ccNum.addClass('error');
+  //     $zip.addClass('error');
+  //     $cvv.addClass('error');
+  //     $('#blankCC').show();
+  //     return true;
+  //   } else if (isNaN($ccNum.val())|| isNaN($zip.val()) || isNaN($cvv.val())) {
+  //     $('#blankCC').hide();
+  //     $('#numericCC').show();
+  //     return true;
+  //   } else if ($ccNum.val().length < 13 || $ccNum.val().length > 16) {
+  //     $('#numericCC').hide();
+  //     $('#lengthCC').show();
+  //     return true;
+  //   } else if ($zip.val().length < 5 || $zip.val().length > 5) {
+  //     return true;
+  //   }
+  //   else if ($cvv.val().length < 3 || $cvv.val().length > 3) {
+  //     return true;
+  //   } else {
+  //     $('#lengthCC').hide();
+  //
+  //     $ccNum.removeClass('error');
+  //     $zip.removeClass('error');
+  //     $cvv.removeClass('error');
+  //   }
+  // }
+  // if ($paymentSelect.val() === 'paypal' ||  $paymentSelect.val() === 'bitcoin' || $paymentSelect.val() === 'select_method') {
+  //
+  //   $('#lengthCC').hide();
+  //
+  //   $('#numericCC').hide();
+  //   $('#blankCC').hide();
+  //   $ccNum.removeClass('error');
+  //   $zip.removeClass('error');
+  //   $cvv.removeClass('error');
+  // }
 }
 
 
 //Submit and Validation
 $submitButton.on('click', function (event) {
    let $error = false;
-   $error = $nameValid();
-   $error = $emailValid();
-   $error = $activitiesValid();
+    // $error = $nameValid();
+  //  $error = $emailValid();
+  //  $error = $activitiesValid();
    $error = $paymentValid();
+  // $error = $ccValidation();
 
   if ($error) {
     event.preventDefault();
@@ -268,6 +345,26 @@ $submitButton.on('click', function (event) {
 });
 
 //After Submit w/ errors, event listners to check if errors fixed
+$name.on('change', function () {
+  if($('#blankName').css('display') === 'inline'){
+  $nameValid();
+}
+});
+
+$('.activities').on('click change', function () {
+  if($('#activityReq').css('display')=== 'inline'){
+  $activitiesValid();
+}
+});
+
+$paymentSelect.on('change', function () {
+  if ($('#methodReq').css('display') === 'inline') {
+  $paymentValid();
+} else if($('#blankCC').css('display') === 'inline' || $('#numericCC').css('display') === 'inline' || $('#lengthCC').css('display') === 'inline') {
+  $paymentValid();
+}
+});
+
 
 
 
