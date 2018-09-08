@@ -278,25 +278,19 @@ function $ccValidation () {
     }
   }
 }
-let $error = false; //if this is true, it will stop submit action
 
 //Submit and Validation
 $submitButton.on('click', function (event) {
-  let $error = false; //if this is true, it will stop submit action
+
 
  $nameValid();
     $emailValid();
      $activitiesValid();
    $ccValidation();
 if ($nameValid() ||  $emailValid() || $activitiesValid() || $ccValidation()) {
-  $error = true;
-} else {
-  $error = false;
-}
 
-  if ($error) {
-    event.preventDefault();
-  }
+  event.preventDefault();
+}
 });
 
 //After Submit w/ errors, event listners check to see if an inputs error message is shown
